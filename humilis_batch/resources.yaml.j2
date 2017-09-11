@@ -106,7 +106,7 @@ resources:
             Tags:
                 - Key: Name
                   Value: {{__context.environment.name}}-{{__context.stage.lower()}}-batch-sg
-            {% if ip_whitelist %}
+            {% if ip_whitelist or sg_whitelist %}
             SecurityGroupIngress:
                 {% for ip in ip_whitelist %}
                 - IpProtocol: tcp
@@ -117,6 +117,12 @@ resources:
                   FromPort: -1
                   ToPort: -1
                   CidrIp: {{ip}}
+                {% endfor %}
+                {% for sg in sg_whitelist %}
+                - IpProtocol: tcp
+                  FromPort: -1
+                  ToPort: -1
+                  SourceSecurityGroupId: {{sg}}
                 {% endfor %}
             {% endif %}
     {% endif %}
