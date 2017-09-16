@@ -1,25 +1,77 @@
 ---
 resources:
-    InstanceRole:
+    {% if type == "SPOT" %}
+    SpotFleetRole:
         Type: "AWS::IAM::Role"
         Properties:
-            AssumeRolePolicyDocument: 
+            AssumeRolePolicyDocument:
                 Version: "2012-10-17"
                 Statement:
                   -
                     Effect: "Allow"
-                    Principal: 
-                      Service: 
+                    Principal:
+                      Service:
                         - "ec2.amazonaws.com"
-                    Action: 
+                    Action:
                       - "sts:AssumeRole"
-            Path: "/"
-            {% if iam_role_policies %}
             Policies:
-                {% for policy in iam_role_policies %}
-                - {{ policy }}
-                {% endfor %}
-            {% endif %}
+                - PolicyName: "EcsInstanceRolePolicy"
+                  PolicyDocument:
+                    Version: "2012-10-17"
+                    Statement:
+                        -   Effect: Allow
+                            Action:
+                                - "ec2:DescribeImages"
+                                - "ec2:DescribeSubnets"
+                                - "ec2:RequestSpotInstances"
+                                - "ec2:TerminateInstances"
+                                - "ec2:DescribeInstanceStatus"
+                                - "iam:PassRole"
+                            Resource: "*"
+    {% endif %}
+
+    EcsInstanceRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: "2012-10-17"
+                Statement:
+                  -
+                    Effect: "Allow"
+                    Principal:
+                      Service:
+                        - "ec2.amazonaws.com"
+                    Action:
+                      - "sts:AssumeRole"
+            Policies:
+                - PolicyName: "EcsInstanceRolePolicy"
+                  PolicyDocument:
+                    Version: "2012-10-17"
+                    Statement:
+                        -   Effect: "Allow"
+                            Action:
+                                - "ecs:CreateCluster"
+                                - "ecs:DeregisterContainerInstance"
+                                - "ecs:DiscoverPollEndpoint"
+                                - "ecs:Poll"
+                                - "ecs:RegisterContainerInstance"
+                                - "ecs:StartTelemetrySession"
+                                - "ecs:UpdateContainerInstancesState"
+                                - "ecs:Submit*"
+                                - "ecr:GetAuthorizationToken"
+                                - "ecr:BatchCheckLayerAvailability"
+                                - "ecr:GetDownloadUrlForLayer"
+                                - "ecr:BatchGetImage"
+                                - "logs:CreateLogStream"
+                                - "logs:PutLogEvents"
+                            "Resource": "*"
+
+    EcsInstanceProfile:
+        Type: "AWS::IAM::InstanceProfile"
+        Properties:
+            Roles:
+                - Ref: EcsInstanceRole
+            InstanceProfileName: "{{__context.environment.name}}-{{__context.stage}}-{{__context.layer.name}}"
 
     ServiceRole:
         Type: "AWS::IAM::Role"
@@ -148,10 +200,10 @@ resources:
             InstanceTypes: {{instance_types}}
             {% if type == "SPOT" %}
             SpotIamFleetRole:
-                "Fn::GetAtt" : ["InstanceRole", "Arn"]
+                "Fn::GetAtt" : ["SpotFleetRole", "Arn"]
             {% endif %}
             InstanceRole:
-                "Fn::GetAtt" : ["InstanceRole", "Arn"]
+                "Fn::GetAtt" : ["EcsInstanceProfile", "Arn"]
             SecurityGroupIds:
                 {% if not security_group_ids %}
                 - {Ref: SecurityGroup}
