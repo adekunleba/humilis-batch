@@ -11,23 +11,11 @@ resources:
                     Effect: "Allow"
                     Principal:
                       Service:
-                        - "ec2.amazonaws.com"
+                        - "spotfleet.amazonaws.com"
                     Action:
                       - "sts:AssumeRole"
-            Policies:
-                - PolicyName: "EcsInstanceRolePolicy"
-                  PolicyDocument:
-                    Version: "2012-10-17"
-                    Statement:
-                        -   Effect: Allow
-                            Action:
-                                - "ec2:DescribeImages"
-                                - "ec2:DescribeSubnets"
-                                - "ec2:RequestSpotInstances"
-                                - "ec2:TerminateInstances"
-                                - "ec2:DescribeInstanceStatus"
-                                - "iam:PassRole"
-                            Resource: "*"
+            ManagedPolicyArns:
+                - "arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetRole"
     {% endif %}
 
     EcsInstanceRole:
