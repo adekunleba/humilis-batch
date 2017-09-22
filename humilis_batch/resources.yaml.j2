@@ -137,15 +137,17 @@ resources:
                         "Resource": "*"
                       }]
 
-    {% if not security_group_ids %}
     SecurityGroup:
         Type: "AWS::EC2::SecurityGroup"
         Properties:
             GroupDescription: Security group for AWS Batch instances ({{_env.name}})
             VpcId: {{vpc_id or vpc}}
+            {% if tags %}
             Tags:
-                - Key: Name
-                  Value: {{__context.environment.name}}-{{__context.stage.lower()}}-batch-sg
+                {% for key, value in tags.items() %}
+                - {"Key": key, "Value": value}
+                {% endfor %}
+            {% endif %}
             {% if ip_whitelist or sg_whitelist %}
             SecurityGroupIngress:
                 {% for ip in ip_whitelist %}
@@ -165,7 +167,6 @@ resources:
                   SourceSecurityGroupId: {{sg}}
                 {% endfor %}
             {% endif %}
-    {% endif %}
 
     ComputeEnvironment:
       Type: "AWS::Batch::ComputeEnvironment"
@@ -175,9 +176,21 @@ resources:
             "Fn::GetAtt" : ["ServiceRole", "Arn"]
         ComputeEnvironmentName: "{{__context.environment.name}}-{{__context.stage}}-{{__context.layer.name}}"
         ComputeResources:
+            {% if type == "SPOT" %}
+            BidPercentage: {{bid_percentage}}
+            {% endif %}
+            {% if ami_id %}
+            ImageId: {{ami_id}}
+            {% endif %}
+            {% if ec2_key_pair %}
+            Ec2KeyPair: {{ec2_key_pair}}
+            {% endif %}
             MaxvCpus: {{max_cpus}}
             MinvCpus: {{min_cpus}}
+            {% if type != "SPOT" %}
+            # Tags are not supported for SPOT environments
             Tags: {{tags}}
+            {% endif %}
             {% if ec2_key_pair %}
             Ec2KeyPair: {{ec2_key_pair}}
             {% endif %}
@@ -193,13 +206,10 @@ resources:
             InstanceRole:
                 "Fn::GetAtt" : ["EcsInstanceProfile", "Arn"]
             SecurityGroupIds:
-                {% if not security_group_ids %}
                 - {Ref: SecurityGroup}
-                {% else %}
                 {% for sg in security_group_ids %}
                 - {{sg}}
                 {% endfor %}
-                {% endif %}
             Type: {{type}}
             {% if type == "SPOT" %}
             BidPercentage: {{bid_percentage}}

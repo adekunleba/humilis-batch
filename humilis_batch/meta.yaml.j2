@@ -4,6 +4,34 @@ meta:
         A complete, fully operational, AWS Batch computing system
 
     parameters:
+        ip_whitelist:
+            description:
+                The whitelisted IPs that will have access the ECS instances
+            value: []
+
+        sg_whitelist:
+            description:
+                The list of security groups that will have access to the instances
+            value: []
+
+        bid_percentage:
+            description:
+                The minimum percentage that a Spot Instance price must be when
+                compared with the On-Demand price for that instance type
+                before instances are launched.
+            value:
+                100
+
+        ami_id:
+            description:
+                The AMI ID
+            value:
+
+        key_name:
+            description:
+                The name of the SSH key to inject in the EC2 instances
+            value:
+
         max_cpus:
             description: Max. number of vCPUs
             value: 100
@@ -26,7 +54,7 @@ meta:
 
         security_group_ids:
             description: A list of security group IDs, required if vpc_id is not provided
-            value:
+            value: []
 
         vpc_id:
             description: The VPC ID, required if security_group_ids is not provided
@@ -38,7 +66,8 @@ meta:
 
         tags:
             description: A dict of tags to associate to the EC2 instances
-            value: {}
+            value:
+                Name: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage.lower()}}"
 
         instance_types:
             description: A list of instance types
