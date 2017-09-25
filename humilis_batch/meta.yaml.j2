@@ -4,6 +4,10 @@ meta:
         A complete, fully operational, AWS Batch computing system
 
     parameters:
+        has_priority_queue:
+            description: Should the environment have a high priority queue?
+            value: no
+
         ip_whitelist:
             description:
                 The whitelisted IPs that will have access the ECS instances

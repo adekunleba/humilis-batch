@@ -216,6 +216,7 @@ resources:
             {% endif %}
         State: "{{state}}"
 
+    {% if has_priority_queue %}
     PriorityJobQueue:
         Type: "AWS::Batch::JobQueue"
         Properties:
@@ -224,6 +225,7 @@ resources:
                   ComputeEnvironment: {Ref: ComputeEnvironment}
             Priority: 100
             JobQueueName: "{{__context.environment.name}}-{{__context.stage}}-{{__context.layer.name}}-priority"
+    {% endif %}
 
     DefaultJobQueue:
         Type: "AWS::Batch::JobQueue"
