@@ -153,7 +153,7 @@ resources:
                 {% for ip in ip_whitelist %}
                 - IpProtocol: tcp
                   FromPort: 1
-                  ToPort: 99999
+                  ToPort: 9999
                   CidrIp: {{ip}}
                 - IpProtocol: icmp
                   FromPort: -1
@@ -163,7 +163,7 @@ resources:
                 {% for sg in sg_whitelist %}
                 - IpProtocol: tcp
                   FromPort: 1
-                  ToPort: 99999
+                  ToPort: 9999
                   SourceSecurityGroupId: {{sg}}
                 {% endfor %}
             {% endif %}
