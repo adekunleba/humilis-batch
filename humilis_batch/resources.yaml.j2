@@ -182,8 +182,8 @@ resources:
             {% if ami_id %}
             ImageId: {{ami_id}}
             {% endif %}
-            {% if ec2_key_pair %}
-            Ec2KeyPair: {{ec2_key_pair}}
+            {% if key_name %}
+            Ec2KeyPair: {{key_name}}
             {% endif %}
             MaxvCpus: {{max_cpus}}
             MinvCpus: {{min_cpus}}
@@ -191,8 +191,8 @@ resources:
             # Tags are not supported for SPOT environments
             Tags: {{tags}}
             {% endif %}
-            {% if ec2_key_pair %}
-            Ec2KeyPair: {{ec2_key_pair}}
+            {% if key_name %}
+            Ec2KeyPair: {{key_name}}
             {% endif %}
             Subnets:
                 {% for subnet in subnet_ids %}
