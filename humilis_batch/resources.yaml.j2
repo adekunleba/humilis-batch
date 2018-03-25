@@ -59,7 +59,7 @@ resources:
         Properties:
             Roles:
                 - Ref: EcsInstanceRole
-            InstanceProfileName: "{{__context.environment.name}}-{{__context.stage}}-{{__context.layer.name}}"
+            InstanceProfileName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}"
 
     ServiceRole:
         Type: "AWS::IAM::Role"
@@ -174,7 +174,7 @@ resources:
         Type: MANAGED
         ServiceRole:
             "Fn::GetAtt" : ["ServiceRole", "Arn"]
-        ComputeEnvironmentName: "{{__context.environment.name}}-{{__context.stage}}-{{__context.layer.name}}"
+        ComputeEnvironmentName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}"
         ComputeResources:
             {% if type == "SPOT" %}
             BidPercentage: {{bid_percentage}}
@@ -224,7 +224,7 @@ resources:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
             Priority: 100
-            JobQueueName: "{{__context.environment.name}}-{{__context.stage}}-{{__context.layer.name}}-priority"
+            JobQueueName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-priority"
     {% endif %}
 
     DefaultJobQueue:
@@ -234,4 +234,4 @@ resources:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
             Priority: 1
-            JobQueueName: "{{__context.environment.name}}-{{__context.stage}}-{{__context.layer.name}}-default"
+            JobQueueName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-default"
