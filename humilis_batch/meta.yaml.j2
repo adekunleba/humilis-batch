@@ -71,7 +71,7 @@ meta:
         tags:
             description: A dict of tags to associate to the EC2 instances
             value:
-                Name: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage.lower()}}"
+                Name: "{{__context.environment.name}}-{{__context.stage.lower()}}-{{__context.layer.name}}"
 
         instance_types:
             description: A list of instance types
