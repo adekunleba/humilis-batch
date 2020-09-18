@@ -79,6 +79,6 @@ See [License file][LICENSE].
 [LICENSE]: ./LICENSE.txt
 
 
-© 2017 German Gomez-Herrero, [Find Hotel][fh] and others.
+© 2020 German Gomez-Herrero, [FindHotel][fh] and others.
 
 [fh]: http://company.findhotel.net
