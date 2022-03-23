@@ -52,6 +52,10 @@ meta:
             description: Either EC2 or SPOT
             value: SPOT
 
+        has_ec2_fallback:
+            description: Whether we should use EC2 (on demand) fallback for SPOT
+            value: no
+
         bid_percentage:
             description: The Bid percentage for spot instances
             value: 100

@@ -249,7 +249,7 @@ resources:
             {% endif %}
         State: "{{state}}"
 
-    {% if type == "SPOT" %}
+    {% if type == "SPOT" and has_ec2_fallback %}
     ComputeEnvironmentOndemandFallback:
       Type: "AWS::Batch::ComputeEnvironment"
       Properties:
@@ -293,7 +293,7 @@ resources:
             ComputeEnvironmentOrder:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
-                {% if type == "SPOT" %}
+                {% if type == "SPOT" and has_ec2_fallback %}
                 - Order: 2
                   ComputeEnvironment: {Ref: ComputeEnvironmentOndemandFallback}
                 {% endif %}
@@ -307,7 +307,7 @@ resources:
             ComputeEnvironmentOrder:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
-                {% if type == "SPOT" %}
+                {% if type == "SPOT" and has_ec2_fallback %}
                 - Order: 2
                   ComputeEnvironment: {Ref: ComputeEnvironmentOndemandFallback}
                 {% endif %}
