@@ -249,6 +249,43 @@ resources:
             {% endif %}
         State: "{{state}}"
 
+    {% if type == "SPOT" %}
+    ComputeEnvironmentOndemandFallback:
+      Type: "AWS::Batch::ComputeEnvironment"
+      Properties:
+        Type: MANAGED
+        ServiceRole:
+            "Fn::GetAtt" : ["ServiceRole", "Arn"]
+        ComputeEnvironmentName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-ondemand-fallback"
+        ComputeResources:
+            {% if ami_id %}
+            ImageId: {{ami_id}}
+            {% endif %}
+            {% if key_name %}
+            Ec2KeyPair: {{key_name}}
+            {% endif %}
+            MaxvCpus: {{max_cpus}}
+            MinvCpus: {{min_cpus}}
+            Tags: {{tags}}
+            {% if key_name %}
+            Ec2KeyPair: {{key_name}}
+            {% endif %}
+            Subnets:
+                {% for subnet in subnet_ids %}
+                - {{subnet}}
+                {% endfor %}
+            InstanceTypes: {{instance_types}}
+            InstanceRole:
+                "Fn::GetAtt" : ["EcsInstanceProfile", "Arn"]
+            SecurityGroupIds:
+                - {Ref: SecurityGroup}
+                {% for sg in security_group_ids %}
+                - {{sg}}
+                {% endfor %}
+            Type: EC2
+        State: "{{state}}"
+    {% endif %}
+
     {% if has_priority_queue %}
     PriorityJobQueue:
         Type: "AWS::Batch::JobQueue"
@@ -256,6 +293,8 @@ resources:
             ComputeEnvironmentOrder:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
+                - Order: 2
+                  ComputeEnvironment: {Ref: ComputeEnvironmentOndemandFallback}
             Priority: 100
             JobQueueName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-priority"
     {% endif %}
@@ -266,5 +305,7 @@ resources:
             ComputeEnvironmentOrder:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
+                - Order: 2
+                  ComputeEnvironment: {Ref: ComputeEnvironmentOndemandFallback}
             Priority: 1
             JobQueueName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-default"
