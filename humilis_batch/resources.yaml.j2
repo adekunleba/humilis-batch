@@ -293,8 +293,10 @@ resources:
             ComputeEnvironmentOrder:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
+                {% if type == "SPOT" %}
                 - Order: 2
                   ComputeEnvironment: {Ref: ComputeEnvironmentOndemandFallback}
+                {% endif %}
             Priority: 100
             JobQueueName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-priority"
     {% endif %}
@@ -305,7 +307,9 @@ resources:
             ComputeEnvironmentOrder:
                 - Order: 1
                   ComputeEnvironment: {Ref: ComputeEnvironment}
+                {% if type == "SPOT" %}
                 - Order: 2
                   ComputeEnvironment: {Ref: ComputeEnvironmentOndemandFallback}
+                {% endif %}
             Priority: 1
             JobQueueName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-default"
