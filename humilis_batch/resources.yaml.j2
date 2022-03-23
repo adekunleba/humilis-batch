@@ -177,7 +177,7 @@ resources:
             VpcId: {{vpc_id or vpc}}
             {% if tags %}
             Tags:
-                {% for key, value in tags.items() %}
+                {% for key, value in __context.environment.tags.items() %}
                 - {"Key": key, "Value": value}
                 {% endfor %}
             {% endif %}
@@ -205,6 +205,12 @@ resources:
       Type: "AWS::Batch::ComputeEnvironment"
       Properties:
         Type: MANAGED
+        {% if tags %}
+        Tags:
+            {% for key, value in __context.environment.tags.items() %}
+            {{key}}: {{value}}
+            {% endfor %}
+        {% endif %}
         ServiceRole:
             "Fn::GetAtt" : ["ServiceRole", "Arn"]
         ComputeEnvironmentName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}"
@@ -220,9 +226,11 @@ resources:
             {% endif %}
             MaxvCpus: {{max_cpus}}
             MinvCpus: {{min_cpus}}
-            {% if type != "SPOT" %}
-            # Tags are not supported for SPOT environments
-            Tags: {{tags}}
+            {% if tags %}
+            Tags:
+                {% for key, value in __context.environment.tags.items() %}
+                {{key}}: {{value}}
+                {% endfor %}
             {% endif %}
             {% if key_name %}
             Ec2KeyPair: {{key_name}}
@@ -254,6 +262,12 @@ resources:
       Type: "AWS::Batch::ComputeEnvironment"
       Properties:
         Type: MANAGED
+        {% if tags %}
+        Tags:
+            {% for key, value in __context.environment.tags.items() %}
+            key: value
+            {% endfor %}
+        {% endif %}
         ServiceRole:
             "Fn::GetAtt" : ["ServiceRole", "Arn"]
         ComputeEnvironmentName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-ondemand-fallback"
@@ -266,7 +280,12 @@ resources:
             {% endif %}
             MaxvCpus: {{max_cpus}}
             MinvCpus: {{min_cpus}}
-            Tags: {{tags}}
+            {% if tags %}
+            Tags:
+                {% for key, value in tags.items() %}
+                {{key}}: {{value}}
+                {% endfor %}
+            {% endif %}
             {% if key_name %}
             Ec2KeyPair: {{key_name}}
             {% endif %}
