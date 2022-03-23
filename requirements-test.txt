@@ -3,6 +3,6 @@ pytest
 mock
 tox
 
-humilis-vpc>=1.6.0
+humilis-vpc>=0.2.8
 
 -e .
