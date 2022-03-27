@@ -14,6 +14,8 @@ humilis-batch:
 
         - layer: batch
           layer_type: batch
+          description: This is a dummy layer-specific description
+          allocation_strategy: BEST_FIT_PROGRESSIVE
           subnet_ids:
             - $layer_output:
                 layer_name: vpc
@@ -34,6 +36,7 @@ humilis-batch:
         - layer: batch-spot
           layer_type: batch
           type: SPOT
+          allocation_strategy: BEST_FIT_PROGRESSIVE
           subnet_ids:
             - $layer_output:
                 layer_name: vpc
@@ -54,6 +57,7 @@ humilis-batch:
         - layer: batch-spot-with-fallback
           layer_type: batch
           type: SPOT
+          allocation_strategy: BEST_FIT_PROGRESSIVE
           has_ec2_fallback: yes
           subnet_ids:
             - $layer_output:

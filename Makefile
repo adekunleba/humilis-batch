@@ -22,7 +22,7 @@ test: .env
 
 # remove .tox and .env dirs
 clean:
-	rm -rf .env .tox .cache humilis_batch.egg-info
+	rm -rf .env .tox .cache humilis_batch.egg-info dist
 
 # configure humilis
 configure:
@@ -48,6 +48,7 @@ delete: develop
 
 # upload to Pypi
 pypi: develop
+	rm -rf dist
 	$(PIP) install twine
 	$(PYTHON) setup.py sdist
 	$(TWINE) upload dist/*

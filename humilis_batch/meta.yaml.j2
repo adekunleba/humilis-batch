@@ -1,9 +1,13 @@
 ---
 meta:
     description:
-        A complete, fully operational, AWS Batch computing system
+        An AWS Batch computing system
 
     parameters:
+        allocation_strategy:
+            description: The allocation strategy to use for the compute resource if not enough instances of the best fitting instance type can be allocated
+            value: BEST_FIT
+
         has_priority_queue:
             description: Should the environment have a high priority queue?
             value: no
