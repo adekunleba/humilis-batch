@@ -50,6 +50,7 @@ resources:
                                 - "ecr:BatchCheckLayerAvailability"
                                 - "ecr:GetDownloadUrlForLayer"
                                 - "ecr:BatchGetImage"
+                                - "secretsmanager:*"
                                 - "logs:CreateLogStream"
                                 - "logs:PutLogEvents"
                             "Resource": "*"
@@ -69,10 +70,10 @@ resources:
                 Statement:
                   -
                     Effect: "Allow"
-                    Principal: 
-                      Service: 
+                    Principal:
+                      Service:
                         - "batch.amazonaws.com"
-                    Action: 
+                    Action:
                       - "sts:AssumeRole"
             Path: "/"
             ManagedPolicyArns:
@@ -108,6 +109,17 @@ resources:
                   SourceSecurityGroupId: {{sg}}
                 {% endfor %}
             {% endif %}
+
+    {% if has_launch_template %}
+    LaunchTemplate:
+      Type: "AWS::EC2::LaunchTemplate"
+      Properties:
+        LaunchTemplateName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}"
+        LaunchTemplateData:
+          {% if user_data %}
+          UserData: {{user_data}}
+          {% endif %}
+    {% endif %}
 
     ComputeEnvironment:
       Type: "AWS::Batch::ComputeEnvironment"
@@ -163,6 +175,12 @@ resources:
             Type: {{type}}
             {% if type == "SPOT" %}
             BidPercentage: {{bid_percentage}}
+            {% endif %}
+            {% if has_launch_template %}
+            LaunchTemplate:
+              LaunchTemplateId: {Ref: LaunchTemplate}
+              Version:
+                "Fn::GetAtt": ["LaunchTemplate", "LatestVersionNumber"]
             {% endif %}
         State: "{{state}}"
 
