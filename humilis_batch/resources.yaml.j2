@@ -110,15 +110,13 @@ resources:
                 {% endfor %}
             {% endif %}
 
-    {% if has_launch_template %}
+    {% if user_data %}
     LaunchTemplate:
       Type: "AWS::EC2::LaunchTemplate"
       Properties:
         LaunchTemplateName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}"
         LaunchTemplateData:
-          {% if user_data %}
           UserData: {{user_data}}
-          {% endif %}
     {% endif %}
 
     ComputeEnvironment:
@@ -176,7 +174,7 @@ resources:
             {% if type == "SPOT" %}
             BidPercentage: {{bid_percentage}}
             {% endif %}
-            {% if has_launch_template %}
+            {% if user_data %}
             LaunchTemplate:
               LaunchTemplateId: {Ref: LaunchTemplate}
               Version:
@@ -228,6 +226,12 @@ resources:
                 {% for sg in security_group_ids %}
                 - {{sg}}
                 {% endfor %}
+            {% if user_data %}
+            LaunchTemplate:
+              LaunchTemplateId: {Ref: LaunchTemplate}
+              Version:
+                "Fn::GetAtt": ["LaunchTemplate", "LatestVersionNumber"]
+            {% endif %}
             Type: EC2
         State: "{{state}}"
     {% endif %}

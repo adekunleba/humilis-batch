@@ -1,0 +1,10 @@
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/cloud-config; charset="us-ascii"
+
+runcmd:
+- echo "Test for humilis-batch with template! Encode me to base64"
+
+--==MYBOUNDARY==
