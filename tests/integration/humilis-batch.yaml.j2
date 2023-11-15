@@ -75,3 +75,26 @@ humilis-batch:
                     args:
                         - "bastion"
                 output_attribute: id
+
+        - layer: batch-with-launch-template
+          layer_type: batch
+          type: SPOT
+          allocation_strategy: BEST_FIT_PROGRESSIVE
+          subnet_ids:
+            - $layer_output:
+                layer_name: vpc
+                output_name: PublicSubnet1
+          vpc_id:
+            $layer_output:
+                layer_name: vpc
+                output_name: VpcId
+          ami_id:
+            $boto3:
+                service: ec2
+                call:
+                    method: get_ami_by_name
+                    args:
+                        - "bastion"
+                output_attribute: id
+
+          user_data: TUlNRS1WZXJzaW9uOiAxLjAKQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvbWl4ZWQ7IGJvdW5kYXJ5PSI9PU1ZQk9VTkRBUlk9PSIKCi0tPT1NWUJPVU5EQVJZPT0KQ29udGVudC1UeXBlOiB0ZXh0L2Nsb3VkLWNvbmZpZzsgY2hhcnNldD0idXMtYXNjaWkiCgpydW5jbWQ6Ci0gZWNobyAiVGVzdCBmb3IgaHVtaWxpcy1iYXRjaCB3aXRoIHRlbXBsYXRlISBFbmNvZGUgbWUgdG8gYmFzZTY0IgoKLS09PU1ZQk9VTkRBUlk9PQo=

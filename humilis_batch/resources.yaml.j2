@@ -50,6 +50,7 @@ resources:
                                 - "ecr:BatchCheckLayerAvailability"
                                 - "ecr:GetDownloadUrlForLayer"
                                 - "ecr:BatchGetImage"
+                                - "secretsmanager:*"
                                 - "logs:CreateLogStream"
                                 - "logs:PutLogEvents"
                             "Resource": "*"
@@ -69,10 +70,10 @@ resources:
                 Statement:
                   -
                     Effect: "Allow"
-                    Principal: 
-                      Service: 
+                    Principal:
+                      Service:
                         - "batch.amazonaws.com"
-                    Action: 
+                    Action:
                       - "sts:AssumeRole"
             Path: "/"
             ManagedPolicyArns:
@@ -108,6 +109,15 @@ resources:
                   SourceSecurityGroupId: {{sg}}
                 {% endfor %}
             {% endif %}
+
+    {% if user_data %}
+    LaunchTemplate:
+      Type: "AWS::EC2::LaunchTemplate"
+      Properties:
+        LaunchTemplateName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}"
+        LaunchTemplateData:
+          UserData: {{user_data}}
+    {% endif %}
 
     ComputeEnvironment:
       Type: "AWS::Batch::ComputeEnvironment"
@@ -164,6 +174,12 @@ resources:
             {% if type == "SPOT" %}
             BidPercentage: {{bid_percentage}}
             {% endif %}
+            {% if user_data %}
+            LaunchTemplate:
+              LaunchTemplateId: {Ref: LaunchTemplate}
+              Version:
+                "Fn::GetAtt": ["LaunchTemplate", "LatestVersionNumber"]
+            {% endif %}
         State: "{{state}}"
 
     {% if type == "SPOT" and has_ec2_fallback %}
@@ -210,6 +226,12 @@ resources:
                 {% for sg in security_group_ids %}
                 - {{sg}}
                 {% endfor %}
+            {% if user_data %}
+            LaunchTemplate:
+              LaunchTemplateId: {Ref: LaunchTemplate}
+              Version:
+                "Fn::GetAtt": ["LaunchTemplate", "LatestVersionNumber"]
+            {% endif %}
             Type: EC2
         State: "{{state}}"
     {% endif %}
