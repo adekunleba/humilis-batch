@@ -1,5 +1,5 @@
 # dev utilities
-pypandoc
+pypandoc==1.5
 ipdb
 
 -r requirements-test.txt
