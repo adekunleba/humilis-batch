@@ -49,6 +49,6 @@ delete: develop
 # upload to Pypi
 pypi: develop
 	rm -rf dist
-	$(PIP) install twine
+	$(PIP) install twine==3.4.2
 	$(PYTHON) setup.py sdist
 	$(TWINE) upload dist/*
